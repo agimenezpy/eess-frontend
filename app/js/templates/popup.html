@@ -1,0 +1,9 @@
+<b>DIRECCION</b>: <%- model['direccion'].toUpperCase() %><br>
+<b>TIPO</b>: <i><%- model['tipo'].toUpperCase() %></i><br>
+<b>DISTRITO</b>: <%- model['distrito'].toUpperCase() %><br>
+<b>DEPARTAMENTO</b>: <%- model['departamento'].toUpperCase() %><br>
+<b>DISTRIBUIDOR</b>: <%- model['distribuidor'].toUpperCase() %><br>
+<b>OPERADOR</b>: <%- model['operador'].toUpperCase() %><br>
+<% if (model['marker-icon'] != "NIN") { %> 
+<img src="<%- model['marker-url'] %>" class="img-thumbnail">
+<% } %>

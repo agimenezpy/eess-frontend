@@ -1,0 +1,28 @@
+{
+  "name": "eess-frontend",
+  "version": "1.0.0",
+  "description": "FrontEnd",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alberto G.",
+  "license": "MIT",
+  "dependencies": {
+    "backbone": "^1.4.0",
+    "bootstrap": "^3.4.1",
+    "jquery": "^3.3.1",
+    "leaflet-measure": "^3.1.0",
+    "leaflet.markercluster": "^1.4.1",
+    "requirejs": "^2.3.6",
+    "requirejs-text": "^2.0.15",
+    "underscore": "^1.9.1"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.4",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-processhtml": "^0.4.2",
+    "jshint": "^2.10.2"
+  }
+}
