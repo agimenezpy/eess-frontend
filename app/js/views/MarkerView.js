@@ -35,53 +35,65 @@
         },
         render: function() {
             this.overlays = L.layerGroup().addTo(this.map);
-            var self = this;
+            var that = this;
             L.mapbox.featureLayer()
-            .loadURL(this.api + 'features/estaciones/')
-            .on('ready', function(e) {
-                var layers = e.target;
+            .loadURL(this.api + "features/estaciones/")
+            .on("ready", function(e) {
+                var estaciones = e.target;
 
-                self.overlays.clearLayers();
+                that.overlays.clearLayers();
                 
-                var clusterGroup = new L.MarkerClusterGroup().addTo(self.overlays);
+                var clusterGroup = new L.MarkerClusterGroup();
                 
-                layers.eachLayer(function(item) {
+                estaciones.eachLayer(function(item) {
                     clusterGroup.addLayer(item);
-                    var props = item.toGeoJSON().properties;
+                    var props = item.feature.properties;
                     item.bindPopup(function() {
                         props["marker-url"] = STATIC_DIR + "img/emb/" + props["marker-icon"] + "_64.png";
-                        return self.template({model: props});
+                        return that.template({model: props});
                     });
                     item.setIcon(
-                        L.mapbox.marker.icon({'marker-symbol': props["tipo"] === "Estación de Servicio" ? 'fuel' : 'bus', 
-                        'marker-color': self.colors[props["marker-icon"] || "#fff"]})
+                        L.mapbox.marker.icon({
+                            "marker-symbol": props.tipo === "Estación de Servicio" ? "fuel" : "bus", 
+                            "marker-color": that.colors[props["marker-icon"] || "#fff"]
+                        })
                     );
                 });
 
-                layers.on('click', function(e) {
-                    self.map.setView(e.layer.getLatLng(), 
-                        _.max([14, self.map.getZoom()]), 
+                estaciones.on("click", function(estacion) {
+                    var marker = estacion.layer;
+                    that.map.setView(marker.getLatLng(), 
+                        _.max([14, that.map.getZoom()]), 
                         {inertia: true}
                     );
-                    if (self.circle) {
-                        self.map.removeLayer(self.circle);
+                    if (that.circle) {
+                        that.map.removeLayer(that.circle);
                     }
-                    self.circle = L.circle(e.layer.getLatLng(), 1000).addTo(self.map);
+                    that.circle = L.circle(marker.getLatLng(), 1000).addTo(that.map);
                 });
 
-                self.setOperators(layers.getLayers());
-                self.setDistributors(layers.getLayers());
-                self.markers = layers;
+                that.map.on("click", function(e) {
+                    if (that.circle) {
+                        that.map.removeLayer(that.circle);
+                        that.circle = null;
+                    }
+                });
+
+                clusterGroup.addTo(that.overlays);
+
+                that.setOperators(estaciones.getLayers());
+                that.setDistributors(estaciones.getLayers());
+                that.estaciones = estaciones;
             });
         },
-        setOperators: function(layers) {
+        setOperators: function(markers) {
             this.operators = [];
         },
 
-        setDistributors: function(layers) {
+        setDistributors: function(markers) {
             this.distributors = _.uniq(
-                _.map(layers, function(item) { 
-                    return item.toGeoJSON().properties["distribuidor"]; 
+                _.map(markers, function(item) { 
+                    return item.feature.properties.distribuidor; 
                 })
             );
 
@@ -97,21 +109,23 @@
             if (this.circle) {
                 this.map.removeLayer(this.circle);
             }
-            var list = [];
+            var filtered = [];
             for (var i = 0; i < filters.length; i++) {
-                if (filters[i].checked) list.push(filters[i].value);
+                if (filters[i].checked) {
+                    filtered.push(filters[i].value);
+                }
             }
             this.overlays.clearLayers();
             var clusterGroup = new L.MarkerClusterGroup().addTo(this.overlays);
-            var self = this;
-            this.markers.eachLayer(function(layer) {
-                if (list.indexOf(layer.feature.properties.distribuidor) !== -1) {
+            this.estaciones.eachLayer(function(layer) {
+                if (filtered.indexOf(layer.feature.properties.distribuidor) !== -1) {
                     clusterGroup.addLayer(layer);
                 }
             });
             if (clusterGroup.getBounds().isValid()) {
                 this.map.fitBounds(clusterGroup.getBounds());
             }
+            clusterGroup.addTo(this.overlays);
         }
     });
     return MakerView;

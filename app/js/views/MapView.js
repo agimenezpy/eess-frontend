@@ -29,29 +29,29 @@ function ($, _, Backbone, L, CircleControl) {
             .addControl(L.mapbox.legendControl())
             .addControl(
                 L.control.measure({ 
-                    position: 'bottomright',
-                    primaryLengthUnit: 'meters', 
-                    secondaryLengthUnit: 'kilometers', 
-                    primaryAreaUnit: 'sqmeters',
-                    activeColor: '#3c8dfd',
-                    completedColor: '#3c8dfd'
+                    position: "bottomright",
+                    primaryLengthUnit: "meters", 
+                    secondaryLengthUnit: "kilometers", 
+                    primaryAreaUnit: "sqmeters",
+                    activeColor: "#3c8dfd",
+                    completedColor: "#3c8dfd"
                 })
             )
-            /*.addControl(L.mapbox.geocoderControl('mapbox.places', {
+            /*.addControl(L.mapbox.geocoderControl("mapbox.places", {
                 autocomplete: true
             }))*/
             .addControl(new CircleControl())
             .setView([this.lat, this.lon], this.zoom);
 
             var searchControl = L.esri.Geocoding.geosearch({expanded: true, collapseAfterResult: false, zoomToResult: false}).addTo(this.map);
-            var self = this;
-            searchControl.on('results', function(data){ 
+            var that = this;
+            searchControl.on("results", function(data){ 
                 if (data.results.length > 0) {
-                    var popup = L.popup()
+                    L.popup()
                         .setLatLng(data.results[0].latlng)
                         .setContent(data.results[0].text)
-                        .openOn(self.map);
-                    self.map.setView(data.results[0].latlng, 14);
+                        .openOn(that.map);
+                    that.map.setView(data.results[0].latlng, 14);
                 }
             });
             this.setBasemap("OpenStreetMap");
@@ -67,11 +67,11 @@ function ($, _, Backbone, L, CircleControl) {
             if (layer) {
                 this.map.removeLayer(layer);
             } 
-            if (basemap === 'OpenStreetMap') {
+            if (basemap === "OpenStreetMap") {
                 layer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
                 this.layerLabels = null;
             }
-            else if (basemap === 'Imagery') {
+            else if (basemap === "Imagery") {
                 layer  = L.esri.basemapLayer(basemap);
             }
             else {
@@ -82,8 +82,8 @@ function ($, _, Backbone, L, CircleControl) {
             this.map.addLayer(layer);
             this.baseLayer = layer;
 
-            if (basemap === 'ShadedRelief' || basemap === 'Oceans' || basemap === 'Gray' || basemap === 'DarkGray' || basemap === 'Imagery' || basemap === 'Terrain') {
-                this.layerLabels = L.esri.basemapLayer(basemap + 'Labels');
+            if (basemap === "ShadedRelief" || basemap === "Oceans" || basemap === "Gray" || basemap === "DarkGray" || basemap === "Imagery" || basemap === "Terrain") {
+                this.layerLabels = L.esri.basemapLayer(basemap + "Labels");
                 this.map.addLayer(this.layerLabels);
             }
           }

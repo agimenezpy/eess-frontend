@@ -21,15 +21,15 @@ function ($, _, Backbone) {
         },
 
         render: function() {
-            var self = this;
+            var that = this;
             _.each(this.distributors, function(item) {
-                $(self.$el).append(self.template({key: item, value: item}));
+                $(that.$el).append(that.template({key: item, value: item}));
             });
             return this;
         },
 
         filterStations: function(evt) {
-            if ($(evt.target).val() == "Todos") {
+            if ($(evt.target).val() === "Todos") {
                 $("[name='filters']", this.$el).each(function(o,i){i.checked = evt.target.checked;});
             }
             else {

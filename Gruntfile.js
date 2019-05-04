@@ -3,9 +3,9 @@
 const CONFIG = {
     src: ".",
     build: "build",
-    dist: "../eessadmin",
-    static: "../eessadmin/eessadmin/static",
-    root: "../eessadmin/templates"
+    dist: "../eessadmin/public",
+    static: "../eessadmin/public/static",
+    root: "../eessadmin/public"
 };
 
 module.exports = function (grunt) {
@@ -29,13 +29,13 @@ module.exports = function (grunt) {
             prod: {
                 files: [{
                         expand: true,
-						src: ['img/**'],
-						dest: '<%= config.static %>/'
+                        src: ['img/**'],
+                        dest: '<%= config.static %>/'
                     },
                     {
-						expand: true,
-						src: ['app/**', 'app.js', 'config.js'],
-						dest: '<%= config.static %>/'
+                        expand: true,
+                        src: ['app/**', 'app.js', 'config.js'],
+                        dest: '<%= config.static %>/'
                 }]
             },
             vendor: {
@@ -43,49 +43,49 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: 'vendor/',
                         flatten: true,
-						src: [
+                        src: [
                             'calcite-maps/js/jquery/calcitemaps-v0.9.js',
                             'mapbox.js-3.2.0/mapbox.js',
                         ],
-						dest: '<%= config.static %>/vendor/js/'
-					}, {
+                        dest: '<%= config.static %>/vendor/js/'
+                    }, {
                         expand: true,
                         cwd: 'vendor/',
                         flatten: true,
-						src: [
+                        src: [
                             'mapbox.js-3.2.0/images/**',
                         ],
-						dest: '<%= config.static %>/vendor/css/images/'
+                        dest: '<%= config.static %>/vendor/css/images/'
                     }, {
                         expand: true,
                         cwd: 'vendor/calcite-maps/fonts/',
-						src: [
+                        src: [
                             '**',
                         ],
-						dest: '<%= config.static %>/vendor/fonts/'
-					}, {
+                        dest: '<%= config.static %>/vendor/fonts/'
+                    }, {
                         expand: true,
                         cwd: 'vendor/',
                         flatten: true,
-						src: [
+                        src: [
                             'calcite-maps/css/calcite-maps-bootstrap.min-v0.9.css',
                             'calcite-maps/css/calcite-maps-esri-leaflet.min-v0.9.css',
                             'mapbox.js-3.2.0/mapbox.css'
                         ],
-						dest: '<%= config.static %>/vendor/css/'
+                        dest: '<%= config.static %>/vendor/css/'
                     }, {
                         expand: true,
                         cwd: 'node_modules/',
                         flatten: true,
-						src: [
+                        src: [
                             'leaflet-measure/dist/assets/**',
                         ],
-						dest: '<%= config.static %>/vendor/css/assets/'
-					}, {
+                        dest: '<%= config.static %>/vendor/css/assets/'
+                    }, {
                         expand: true,
                         cwd: 'node_modules/',
                         flatten: true,
-						src: [
+                        src: [
                             'leaflet-measure/dist/leaflet-measure.css',
                             'leaflet.markercluster/dist/MarkerCluster.css',
                             'leaflet.markercluster/dist/MarkerCluster.Default.css'
@@ -95,7 +95,7 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: 'node_modules/',
                         flatten: true,
-						src: [
+                        src: [
                             'leaflet.markercluster/dist/leaflet.markercluster.js',
                             'leaflet-measure/dist/leaflet-measure.es.js',
                             'jquery/dist/jquery.min.js',
@@ -105,16 +105,16 @@ module.exports = function (grunt) {
                             'underscore/underscore-min.js',
                             'requirejs-text/text.js'
                         ],
-						dest: '<%= config.static %>/vendor/js/'
+                        dest: '<%= config.static %>/vendor/js/'
                 }]
             }
         },
         processhtml: {
-			prod: {
-				options: { process: true },
-				files: {
-					'<%= config.root %>/index.html': ['index.html']
-				}
+            prod: {
+                options: { process: true },
+                files: {
+                    '<%= config.root %>/index.html': ['index.html']
+                }
             }
         }
     });
