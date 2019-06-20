@@ -5,7 +5,7 @@ const CONFIG = {
     build: "build",
     dist: "../eessadmin/public",
     static: "../eessadmin/public/static",
-    root: "../eessadmin/public"
+    root: "../eessadmin/templates"
 };
 
 module.exports = function (grunt) {
