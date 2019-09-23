@@ -43,7 +43,12 @@ function ($, _, Backbone, L, CircleControl) {
             .addControl(new CircleControl())
             .setView([this.lat, this.lon], this.zoom);
 
-            var searchControl = L.esri.Geocoding.geosearch({expanded: true, collapseAfterResult: false, zoomToResult: false}).addTo(this.map);
+            var searchControl = L.esri.Geocoding.geosearch({
+                expanded: true, collapseAfterResult: false, zoomToResult: false,
+                searchBounds: new L.latLngBounds(new L.LatLng(-27.586842, -62.650357), 
+                                                 new L.LatLng(-19.286729, -54.245289)),
+                useMapBounds: false, title: "Buscador de ubicacion", placeholder: "Busca lugares o direcciones"                                             
+            }).addTo(this.map);
             var that = this;
             searchControl.on("results", function(data){ 
                 if (data.results.length > 0) {

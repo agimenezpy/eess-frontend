@@ -88,7 +88,8 @@ module.exports = function (grunt) {
                         src: [
                             'leaflet-measure/dist/leaflet-measure.css',
                             'leaflet.markercluster/dist/MarkerCluster.css',
-                            'leaflet.markercluster/dist/MarkerCluster.Default.css'
+                            'leaflet.markercluster/dist/MarkerCluster.Default.css',
+                            'select2/dist/css/select2.min.css'
                         ],
                         dest: '<%= config.static %>/vendor/css/'
                     }, {
@@ -100,6 +101,7 @@ module.exports = function (grunt) {
                             'leaflet-measure/dist/leaflet-measure.es.js',
                             'jquery/dist/jquery.min.js',
                             'bootstrap/dist/js/bootstrap.min.js',
+                            'select2/dist/js/select2.min.js',
                             'requirejs/require.js',
                             'backbone/backbone-min.js',
                             'underscore/underscore-min.js',

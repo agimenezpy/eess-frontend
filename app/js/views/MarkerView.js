@@ -8,34 +8,55 @@
   */
  define(["jquery", "underscore","backbone", "leaflet",
  "app/js/views/FilterView",
+ "app/js/views/FilterOpView",
  "text!app/js/templates/popup.html"],
- function ($, _, Backbone, L, FilterView, template) {
+ function ($, _, Backbone, L, FilterView, FilterOpView, template) {
     var MakerView = Backbone.View.extend({
         template: _.template(template),
+        circle: null,
+        activeCircle: false,
         initialize: function(options) {
             Backbone.View.prototype.initialize.apply(this, arguments);
             this.api = options.api;
             this.map = options.map;
             this.circle = null;
             this.colors = {
+                "AXN": "e20079",
+                "BR": "fef766",
+                "COR": "22409a",
+                "CPA": "ee1f29",
+                "CPG": "ee332a",
+                "CPT": "09008b",
+                "ECO": "008432",
+                "FLP": "fb0201",
+                "FRT": "214f99",
+                "GSR": "fdd800",
+                "HDN": "021235",
                 "INT": "f5a603",
                 "PUM": "007143",
                 "PSR": "69bd44",
                 "PMX": "d30613",
                 "PCH": "466096",
-                "CPT": "09008b",
-                "COR": "22409a",
-                "TMG": "81a83e", 
-                "CPG": "ee332a",
-                "NIN": "000000",
                 "PTBR": "81a83e",
-                "BR": "fef766",
+                "PTN": "d82d2e",
+                "TMG": "81a83e", 
+                "NIN": "000000",
                 "PURPLE": "B10DC9"
             };
         },
         render: function() {
             this.overlays = L.layerGroup().addTo(this.map);
             var that = this;
+            var loader = $("#loader");
+            loader.attr('class', '');
+    
+            var endLoading = function() {
+                loader.attr('class','done');
+                setTimeout(function() {
+                    loader.attr('class', 'hide');
+                }, 500);
+            };
+
             L.mapbox.featureLayer()
             .loadURL(this.api + "features/estaciones/")
             .on("ready", function(e) {
@@ -69,7 +90,9 @@
                     if (that.circle) {
                         that.map.removeLayer(that.circle);
                     }
-                    that.circle = L.circle(marker.getLatLng(), 1000).addTo(that.map);
+                    if (that.activeCircle) {
+                        that.circle = L.circle(marker.getLatLng(), 1000).addTo(that.map);
+                    }
                 });
 
                 that.map.on("click", function(e) {
@@ -84,10 +107,24 @@
                 that.setOperators(estaciones.getLayers());
                 that.setDistributors(estaciones.getLayers());
                 that.estaciones = estaciones;
+                endLoading();
             });
         },
         setOperators: function(markers) {
-            this.operators = [];
+            this.operators = _.sortBy(
+                _.uniq(
+                    _.map(markers, function(item) { 
+                        return item.feature.properties.operador; 
+                    })
+                ), _.iteratee()
+            );
+
+            this.opFilterView = new FilterOpView({
+                el: $("#operator"),
+                operators: this.operators,
+                markerView: this
+            });
+            this.opFilterView.render();
         },
 
         setDistributors: function(markers) {
@@ -97,28 +134,28 @@
                 })
             );
 
-            var filterView = new FilterView({
+            this.disFilterView = new FilterView({
                 el: $("#distributor"),
                 distributors: this.distributors,
                 markerView: this
             });
-            filterView.render();
+            this.disFilterView.render();
         },
 
-        filterMarkers: function(filters) {
+        filterMarkers: function(filtered, prop) {
+            if (prop === "operador") {
+                this.disFilterView.clear();
+            }
+            else if (prop === "distribuidor") {
+                this.opFilterView.clear();
+            }
             if (this.circle) {
                 this.map.removeLayer(this.circle);
-            }
-            var filtered = [];
-            for (var i = 0; i < filters.length; i++) {
-                if (filters[i].checked) {
-                    filtered.push(filters[i].value);
-                }
             }
             this.overlays.clearLayers();
             var clusterGroup = new L.MarkerClusterGroup().addTo(this.overlays);
             this.estaciones.eachLayer(function(layer) {
-                if (filtered.indexOf(layer.feature.properties.distribuidor) !== -1) {
+                if (filtered.length === 0 || filtered.indexOf(layer.feature.properties[prop]) !== -1) {
                     clusterGroup.addLayer(layer);
                 }
             });

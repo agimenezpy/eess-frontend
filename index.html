@@ -19,6 +19,7 @@
   <link href='node_modules/leaflet.markercluster/dist/MarkerCluster.css' rel='stylesheet' />
   <link href='node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' />
   <link href='node_modules/leaflet-measure/dist/leaflet-measure.css' rel='stylesheet' />
+  <link href='node_modules/select2/dist/css/select2.min.css' rel='stylesheet' />
   <!-- /build -->
 
   <!-- build:[href]:prod /static/vendor/fonts/calcite/ -->
@@ -86,7 +87,8 @@
   <!-- Map Container  -->
 
   <div class="calcite-map">                
-    <div id="map" class="calcite-map-absolute"></div>    
+    <div id="map" class="calcite-map-absolute"></div>
+    <div id="loader" class="hide"><span class="message">Cargando</span></div>
   </div><!-- /.container -->
 
   <!-- Panel -->
@@ -118,16 +120,19 @@
     <div id="panelSearch" class="panel collapse hidsden-sm hisdden-md hisdden-lg"> 
       <div id="headingSearch" class="panel-heading" role="tab">
         <div class="panel-title">
-          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseSearch"  aria-expanded="false" aria-controls="collapseSearch"><span class="glyphicon glyphicon-search" aria-hidden="true"></span><span class="panel-label">Search</span></a> 
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseSearch"  aria-expanded="false" aria-controls="collapseSearch"><span class="glyphicon glyphicon-search" aria-hidden="true"></span><span class="panel-label">Busqueda</span></a> 
           <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelSearch"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>        
         </div>
       </div>
       <div id="collapseSearch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSearch">
         <div class="panel-body calcite-body-expander">    
             <div id="geocodeMobile"></div>
-            <form id="distributor">
-                <div><input id="chkTodos" type='checkbox' name='filters' value='Todos' checked>Todos</div>
-            </form>
+            <h3>Distribuidor</h3>
+            <select id="distributor" name="distributors" class="form-control" style="width: 100%">
+            </select>
+            <h3>Operador</h3>
+            <select id="operator" name="operators" class="form-control" style="width: 100%">
+            </select>
         </div>
       </div>
     </div>
@@ -137,7 +142,7 @@
     <div id="panelBasemaps" class="panel collapse">
       <div id="headingBasemaps" class="panel-heading" role="tab">
         <div class="panel-title">
-          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseBasemaps" aria-expanded="false"   aria-controls="collapseBasemaps"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span><span class="panel-label">Mapa Base</span></a> 
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseBasemaps" aria-expanded="false" aria-controls="collapseBasemaps"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span><span class="panel-label">Mapa Base</span></a> 
           <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelBasemaps"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>  
         </div>
       </div>
@@ -160,6 +165,7 @@
 
   <!-- build:[src]:prod /static/vendor/js/ -->
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script src='node_modules/select2/dist/js/select2.min.js'></script>
   <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="node_modules/requirejs/require.js"></script>
   <!-- /build -->
