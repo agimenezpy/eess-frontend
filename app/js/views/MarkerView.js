@@ -128,10 +128,12 @@
         },
 
         setDistributors: function(markers) {
-            this.distributors = _.uniq(
-                _.map(markers, function(item) { 
-                    return item.feature.properties.distribuidor; 
-                })
+            this.distributors = _.sortBy(
+                _.uniq(
+                    _.map(markers, function(item) { 
+                        return item.feature.properties.distribuidor; 
+                    })
+                ), _.iteratee()
             );
 
             this.disFilterView = new FilterView({
@@ -159,7 +161,10 @@
                     clusterGroup.addLayer(layer);
                 }
             });
-            if (clusterGroup.getBounds().isValid()) {
+            if (filtered.length === 0) {
+                this.map.setView(new L.LatLng(-25.2888, -57.5029), 12);
+            }
+            else if (clusterGroup.getBounds().isValid()) {
                 this.map.fitBounds(clusterGroup.getBounds());
             }
             clusterGroup.addTo(this.overlays);

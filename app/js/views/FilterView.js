@@ -32,6 +32,7 @@ function ($, _, Backbone) {
                 width: "style"
             }).val(null).trigger("change")
             .on("select2:select", _.bind(that.filterStations, that))
+            .on("select2:unselect", _.bind(that.filterStations, that))
             .on("select2:clear", _.bind(that.filterStations, that));
             this.filtered = [];
             return this;
@@ -40,6 +41,9 @@ function ($, _, Backbone) {
         filterStations: function(evt) {
             if (evt.params._type === "clear") {
                 this.filtered = [];
+            }
+            else if (evt.params._type === "unselect") {
+                this.filtered.pop(evt.params.data.text);
             }
             else {
                 this.filtered.push(evt.params.data.text);
