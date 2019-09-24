@@ -40,7 +40,9 @@ function ($, _, Backbone) {
                 this.filtered = [];
             }
             else if (evt.params._type === "unselect") {
-                this.filtered.pop(evt.params.data.text);
+                this.filtered.splice(
+                    this.filtered.indexOf(evt.params.data.text), 1
+                );
             }
             else {
                 this.filtered.push(evt.params.data.text);
