@@ -9,8 +9,9 @@
  define(["jquery", "underscore","backbone", "leaflet",
  "app/js/views/FilterView",
  "app/js/views/FilterOpView",
+ "app/js/views/LegendView",
  "text!app/js/templates/popup.html"],
- function ($, _, Backbone, L, FilterView, FilterOpView, template) {
+ function ($, _, Backbone, L, FilterView, FilterOpView, LegendView, template) {
     var MakerView = Backbone.View.extend({
         template: _.template(template),
         circle: null,
@@ -49,12 +50,12 @@
             this.overlays = L.layerGroup().addTo(this.map);
             var that = this;
             var loader = $("#loader");
-            loader.attr('class', '');
+            loader.attr("class", "");
     
             var endLoading = function() {
-                loader.attr('class','done');
+                loader.attr("class","done");
                 setTimeout(function() {
-                    loader.attr('class', 'hide');
+                    loader.attr("class", "hide");
                 }, 500);
             };
 
@@ -130,11 +131,15 @@
 
         setDistributors: function(markers) {
             this.distributors = _.sortBy(
-                _.uniq(
-                    _.map(markers, function(item) { 
-                        return item.feature.properties.distribuidor; 
-                    })
-                ), _.iteratee()
+                _.map(
+                    _.uniq(markers, false, function(item) {
+                        return item.feature.properties.distribuidor;
+                    }), function(item) { 
+                        return {icon: item.options.icon.options.iconUrl, 
+                                value: item.feature.properties.distribuidor};
+                }), function(item) {
+                    return item.value;
+                }
             );
 
             this.disFilterView = new FilterView({
@@ -143,6 +148,12 @@
                 markerView: this
             });
             this.disFilterView.render();
+
+            this.legendView = new LegendView({
+                el: $("#legend"),
+                distributors: this.distributors
+            });
+            this.legendView.render();
         },
 
         filterMarkers: function(filtered, prop) {

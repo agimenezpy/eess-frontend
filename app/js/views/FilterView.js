@@ -1,5 +1,5 @@
 /**
- * Filter view
+ * Distributors Filter view
  * @author agimenez
  */
 
@@ -10,9 +10,6 @@ define(["jquery", "underscore","backbone"],
 function ($, _, Backbone) {
 
     var FilterView = Backbone.View.extend({
-        events: {
-            "click input": "filterStations"
-        },
         template: _.template("<option><%- value %></option>"),
         initialize: function(options) {
             Backbone.View.prototype.initialize.apply(this, arguments);
@@ -23,7 +20,7 @@ function ($, _, Backbone) {
         render: function() {
             var that = this;
             _.each(this.distributors, function(item) {
-                $(that.$el).append(that.template({key: item, value: item}));
+                $(that.$el).append(that.template({value: item.value}));
             });
             $(that.$el).select2({
                 placeholder: "Seleccione un distribuidor",

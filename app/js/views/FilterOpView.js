@@ -1,5 +1,5 @@
 /**
- * Filter view
+ * Operators Filter view
  * @author agimenez
  */
 
