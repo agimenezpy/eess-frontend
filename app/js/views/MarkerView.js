@@ -106,41 +106,36 @@
 
                 clusterGroup.addTo(that.overlays);
 
-                that.setOperators(estaciones.getLayers());
-                that.setDistributors(estaciones.getLayers());
+                that.setFilters(estaciones.getLayers());
                 that.estaciones = estaciones;
                 endLoading();
             });
         },
-        setOperators: function(markers) {
-            this.operators = _.sortBy(
-                _.uniq(
-                    _.map(markers, function(item) { 
-                        return item.feature.properties.operador; 
-                    })
-                ), _.iteratee()
-            );
-
+        setFilters: function(markers) {
+            this.operators =_.chain(markers)
+                .map(function(item) { 
+                    return {operador: item.feature.properties.operador, 
+                            distribuidor: item.feature.properties.distribuidor}; 
+                })
+                .uniq(_.property("operador", "distribuidor"))
+                .groupBy("distribuidor")
+                .value();
+            
             this.opFilterView = new FilterOpView({
                 el: $("#operator"),
                 operators: this.operators,
                 markerView: this
             });
             this.opFilterView.render();
-        },
 
-        setDistributors: function(markers) {
-            this.distributors = _.sortBy(
-                _.map(
-                    _.uniq(markers, false, function(item) {
-                        return item.feature.properties.distribuidor;
-                    }), function(item) { 
+            this.distributors = _.chain(markers)
+                .map(function(item) { 
                         return {icon: item.options.icon.options.iconUrl, 
                                 value: item.feature.properties.distribuidor};
-                }), function(item) {
-                    return item.value;
-                }
-            );
+                })
+                .uniq("value")
+                .sortBy("value")
+                .value();
 
             this.disFilterView = new FilterView({
                 el: $("#distributor"),
@@ -162,6 +157,7 @@
             }
             else if (prop === "distribuidor") {
                 this.opFilterView.clear();
+                this.opFilterView.setData(filtered);
             }
             if (this.circle) {
                 this.map.removeLayer(this.circle);

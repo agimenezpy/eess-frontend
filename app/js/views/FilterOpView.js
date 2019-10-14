@@ -19,16 +19,9 @@ function ($, _, Backbone) {
 
         render: function() {
             var that = this;
-            _.each(this.operators, function(item) {
-                $(that.$el).append(that.template({value: item}));
-            });
-            $(that.$el).select2({
-                placeholder: "Seleccione un operador",
-                allowClear: true,
-                width: "style"
-            }).val(null).trigger("change")
-            .on("select2:select", _.bind(that.filterStations, that))
-            .on("select2:clear", _.bind(that.filterStations, that));
+            this.setData();
+            $(this.$el).on("select2:select", _.bind(that.filterStations, that))
+                       .on("select2:clear", _.bind(that.filterStations, that));
             return this;
         },
 
@@ -37,12 +30,49 @@ function ($, _, Backbone) {
             if (evt.params._type !== "clear") {
                 val = [evt.params.data.text];
             }
+            else {
+                this.setData();
+            }
 
             this.markerView.filterMarkers(val, "operador");
         },
 
         clear: function(evt) {
             $(this.$el).val(null).trigger("change");
+        },
+
+        getOpData: function(values) {
+            var ops = _.chain(this.operators);
+
+            if (!_.isUndefined(values)) {
+                ops = ops.pick(function(item, key) {
+                    return values.indexOf(key) !== -1;
+                });
+            }
+            return ops.map(function(items, key){
+                        return {
+                            text: key, 
+                            children: _.chain(items)
+                                .map(function(item) {
+                                    return {id: _.uniqueId(), text: item.operador};
+                                })
+                                .sortBy("text")
+                                .value()
+                        }
+                    })
+                    .sortBy("text")
+                    .value();
+        },
+
+        setData: function(filters) {
+            var data = this.getOpData(filters);
+
+            $(this.$el).empty()
+                .select2({placeholder: "Seleccione un operador",
+                    allowClear: true,
+                    width: "style",
+                    data: data
+                }).val(null).trigger("change");
         }
     });
     return FilterView;
