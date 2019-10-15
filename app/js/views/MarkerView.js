@@ -9,9 +9,10 @@
  define(["jquery", "underscore","backbone", "leaflet",
  "app/js/views/FilterView",
  "app/js/views/FilterOpView",
+ "app/js/views/FilterDirView",
  "app/js/views/LegendView",
  "text!app/js/templates/popup.html"],
- function ($, _, Backbone, L, FilterView, FilterOpView, LegendView, template) {
+ function ($, _, Backbone, L, FilterView, FilterOpView, FilterDirView, LegendView, template) {
     var MakerView = Backbone.View.extend({
         template: _.template(template),
         circle: null,
@@ -112,23 +113,25 @@
             });
         },
         setFilters: function(markers) {
-            this.operators =_.chain(markers)
+            var operators =_.chain(markers)
                 .map(function(item) { 
                     return {operador: item.feature.properties.operador, 
                             distribuidor: item.feature.properties.distribuidor}; 
                 })
-                .uniq(_.property("operador", "distribuidor"))
+                .uniq(function(item) {
+                    return item.operador + "-" + item.distribuidor;
+                })
                 .groupBy("distribuidor")
                 .value();
             
             this.opFilterView = new FilterOpView({
                 el: $("#operator"),
-                operators: this.operators,
+                operators: operators,
                 markerView: this
             });
             this.opFilterView.render();
 
-            this.distributors = _.chain(markers)
+            var distributors = _.chain(markers)
                 .map(function(item) { 
                         return {icon: item.options.icon.options.iconUrl, 
                                 value: item.feature.properties.distribuidor};
@@ -139,10 +142,25 @@
 
             this.disFilterView = new FilterView({
                 el: $("#distributor"),
-                distributors: this.distributors,
+                distributors: distributors,
                 markerView: this
             });
             this.disFilterView.render();
+
+            var directions = _.chain(markers)
+                .map(function (item) {
+                    return item.feature.properties.direccion;
+                })
+                .uniq()
+                .sortBy()
+                .value();
+
+            this.dirFilterView = new FilterDirView({
+                el: $("#direction"),
+                directions: directions,
+                markerView: this
+            });
+            this.dirFilterView.render();
 
             this.legendView = new LegendView({
                 el: $("#legend"),
@@ -152,12 +170,19 @@
         },
 
         filterMarkers: function(filtered, prop) {
-            if (prop === "operador") {
-                this.disFilterView.clear();
+            if (filtered.length === 0 && 
+                (prop === "operador" || prop === "direccion")) {
+                filtered = this.disFilterView.filtered;
+                prop = "distribuidor";
             }
             else if (prop === "distribuidor") {
                 this.opFilterView.clear();
+                this.dirFilterView.clear();
                 this.opFilterView.setData(filtered);
+            }
+            else if (prop === "direccion") {
+                this.opFilterView.clear();
+                this.disFilterView.clear();
             }
             if (this.circle) {
                 this.map.removeLayer(this.circle);
@@ -165,7 +190,9 @@
             this.overlays.clearLayers();
             var clusterGroup = new L.MarkerClusterGroup().addTo(this.overlays);
             this.estaciones.eachLayer(function(layer) {
-                if (filtered.length === 0 || filtered.indexOf(layer.feature.properties[prop]) !== -1) {
+                var item = layer.feature.properties;
+                if (filtered.length === 0 || 
+                    filtered.indexOf(item[prop]) !== -1) {
                     clusterGroup.addLayer(layer);
                 }
             });

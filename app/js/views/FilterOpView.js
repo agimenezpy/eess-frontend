@@ -30,9 +30,6 @@ function ($, _, Backbone) {
             if (evt.params._type !== "clear") {
                 val = [evt.params.data.text];
             }
-            else {
-                this.setData();
-            }
 
             this.markerView.filterMarkers(val, "operador");
         },
@@ -44,7 +41,7 @@ function ($, _, Backbone) {
         getOpData: function(values) {
             var ops = _.chain(this.operators);
 
-            if (!_.isUndefined(values)) {
+            if (!_.isUndefined(values) && values.length !== 0) {
                 ops = ops.pick(function(item, key) {
                     return values.indexOf(key) !== -1;
                 });
